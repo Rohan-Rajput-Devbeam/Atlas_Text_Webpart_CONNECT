@@ -1,3 +1,5 @@
+import * as React from 'react';
+import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
 import {
   IPropertyPaneConfiguration,
@@ -16,43 +18,51 @@ import { PropertyFieldSpinButton } from '@pnp/spfx-property-controls/lib/Propert
 
 import { PropertyFieldMultiSelect } from '@pnp/spfx-property-controls/lib/PropertyFieldMultiSelect';
 
+import { CalloutTriggers } from '@pnp/spfx-property-controls/lib/PropertyFieldHeader';
+import { PropertyFieldToggleWithCallout } from '@pnp/spfx-property-controls/lib/PropertyFieldToggleWithCallout';
 
 export interface IAtlasTextWebpartConnectWebPartProps {
   description: string;
   title: string;
   color: string;
   spinValue: number;
-  style:string;
+  style: string;
   multiSelect: any;
-  textUnderline:any;
-  textBold:any;
-  textItalic:any;
+  textUnderline: any;
+  textBold: any;
+  textItalic: any;
+  toggleInfoHeaderValue: boolean;
+  hyperlink:any;
 }
 
 
 export default class AtlasTextWebpartConnectWebPart extends BaseClientSideWebPart<IAtlasTextWebpartConnectWebPartProps> {
 
   public render(): void {
-    if(this.properties.title == null || this.properties.title == ""){
-      this.domElement.innerHTML= `
+    if (this.properties.title == null || this.properties.title == "") {
+      this.domElement.innerHTML = `
       <div>Edit Text</div>
       `;
     }
-    else{
 
-    
-    
+    else if (this.properties.toggleInfoHeaderValue) {
+      this.domElement.innerHTML = `
+      <head>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald&display=swap" rel="stylesheet">
+  </head>
+        <div class="${styles.atlasTextWebpartConnect}">
+          <div class="${styles.container}">     
+          <a href = "${escape(this.properties.hyperlink)}">
+                <span style="color:${this.properties.color}; font-size:${this.properties.spinValue}px; font-weight:${this.properties.textBold}; font-style:${this.properties.style}; text-decoration:${this.properties.textUnderline};" class="${styles.title}">${escape(this.properties.title)}</span>
+          </a>                    
+          </div>
+        </div>`;
+    }
 
-   // console.log(this.properties.multiSelect);
-    // if(this.properties.multiSelect==undefined ){
-
-    
-
-  
-
-  
-    // <p class="${ styles.description }">${escape(this.properties.description)}</p>
-    this.domElement.innerHTML = `
+    else {
+      this.domElement.innerHTML = `
     <head>
     <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -60,19 +70,32 @@ export default class AtlasTextWebpartConnectWebPart extends BaseClientSideWebPar
 </head>
       <div class="${styles.atlasTextWebpartConnect}">
         <div class="${styles.container}">
+
               <span style="color:${this.properties.color}; font-size:${this.properties.spinValue}px; font-weight:${this.properties.textBold}; font-style:${this.properties.style}; text-decoration:${this.properties.textUnderline};" class="${styles.title}">${escape(this.properties.title)}</span>
                     
         </div>
       </div>`;
+    }
   }
-}
 
   protected get dataVersion(): Version {
     return Version.parse('1.0');
   }
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
-    
+    let hyperlinkOnOff: any = [];
+
+    if (this.properties.toggleInfoHeaderValue) {
+      hyperlinkOnOff = PropertyPaneTextField('hyperlink', {
+        label: "Hyperlink",
+        placeholder: "Enter hyperlink for the text!"
+      });
+    }
+    else {
+
+    }
+
+
     return {
       pages: [
         {
@@ -83,11 +106,21 @@ export default class AtlasTextWebpartConnectWebPart extends BaseClientSideWebPar
             {
               groupName: strings.BasicGroupName,
               groupFields: [
-              
+
                 PropertyPaneTextField('title', {
                   label: "Text",
                   placeholder: "Enter your test here!"
                 }),
+                PropertyFieldToggleWithCallout('toggleInfoHeaderValue', {
+                  calloutTrigger: CalloutTriggers.Click,
+                  key: 'toggleInfoHeaderFieldId',
+                  label: 'Add hyperlink to text',
+                  calloutContent: React.createElement('p', {}, 'With this control you can enable or disable the Hyperlink url section for the text.'),
+                  onText: 'ON',
+                  offText: 'OFF',
+                  checked: this.properties.toggleInfoHeaderValue
+                }),
+                hyperlinkOnOff,
                 PropertyFieldSpinButton('spinValue', {
                   label: 'Font-Size',
                   initialValue: this.properties.spinValue,
@@ -129,7 +162,7 @@ export default class AtlasTextWebpartConnectWebPart extends BaseClientSideWebPar
                     { key: 'italic', text: 'Italic' },
                     { key: 'oblique', text: 'Oblique' }
                   ],
-                    selectedKey: 'normal',
+                  selectedKey: 'normal',
                 }),
                 PropertyPaneDropdown('textBold', {
                   label: 'Font-Weight',
@@ -140,7 +173,7 @@ export default class AtlasTextWebpartConnectWebPart extends BaseClientSideWebPar
                     { key: 'lighter', text: 'Lighter' }
 
                   ],
-                    selectedKey: 'normal',
+                  selectedKey: 'normal',
                 }),
                 PropertyPaneDropdown('textUnderline', {
                   label: 'Font-Decoration',
@@ -151,7 +184,7 @@ export default class AtlasTextWebpartConnectWebPart extends BaseClientSideWebPar
                     { key: 'overline', text: 'Overline' }
 
                   ],
-                    selectedKey: 'normal',
+                  selectedKey: 'normal',
                 }),
                 PropertyFieldColorPicker('color', {
                   label: 'Text-Color',
@@ -167,7 +200,7 @@ export default class AtlasTextWebpartConnectWebPart extends BaseClientSideWebPar
                   key: 'colorFieldId',
                   valueAsObject: false
                 })
-              
+
               ]
             }
           ]
@@ -175,5 +208,5 @@ export default class AtlasTextWebpartConnectWebPart extends BaseClientSideWebPar
       ]
     };
   }
- 
+
 }

@@ -14,9 +14,16 @@
     "@microsoft/sp-office-ui-fabric-core": "1.13.1",
     "@microsoft/sp-property-pane": "1.13.1",
     "@microsoft/sp-webpart-base": "1.13.1",
-    "@pnp/spfx-property-controls": "3.3.0"
+    "@pnp/spfx-property-controls": "3.3.0",
+    "office-ui-fabric-react": "7.174.1",
+    "react": "16.13.1",
+    "react-bootstrap": "^1.6.4",
+    "react-dom": "16.13.1",
+    "social-media-icons-react": "^1.1.10"
   },
   "devDependencies": {
+    "@types/react": "16.9.51",
+    "@types/react-dom": "16.9.8",
     "@microsoft/sp-build-web": "1.13.1",
     "@microsoft/sp-tslint-rules": "1.13.1",
     "@microsoft/sp-module-interfaces": "1.13.1",
